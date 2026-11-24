@@ -1,3 +1,6 @@
+enable_backend_policy = True
+enable_controller = True
+
 PUMP_RUN_MAX_S = 15
 DOOR_UNLOCK_MAX_S = 10
 HIGH_LEASE_TTL_S = 60

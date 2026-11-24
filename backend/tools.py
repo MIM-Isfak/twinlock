@@ -13,7 +13,7 @@ Actuate = Callable[[str, str, Mapping[str, object], str], str | None]
 class ToolHandlers:
     def __init__(
         self, caller: str, store: db.Database, engine: Engine, state: StateProvider,
-        actuate: Actuate,
+        actuate: Actuate | None,
     ) -> None:
         self._caller = caller
         self._store = store
@@ -41,7 +41,7 @@ class ToolHandlers:
 
     def execute_action(self, lease_id: str) -> Result:
         result = self._engine.execute(self._caller, lease_id)
-        if result.status != "executed":
+        if result.status != "executed" or self._actuate is None:
             return result
         with self._store.transaction() as conn:
             bound = get_lease(conn, self._caller, lease_id)
@@ -53,4 +53,4 @@ class ToolHandlers:
         with self._store.transaction() as conn:
             db.audit(conn, self._caller, "controller", "refused", time(),
                      reason=reason, lease_id=lease_id)
-        return Result("refused", reason, lease_id)
+        return Result("refused", reason, lease_id, blocked_by="L4")

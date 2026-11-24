@@ -9,6 +9,7 @@ from uuid import uuid4
 from backend import config, db, lease
 from backend.demo import register_demo_devices
 from backend.engine import Engine, Result
+from backend.state import StateProvider
 from backend.tools import ToolHandlers
 from simulator.controller import Controller
 
@@ -21,6 +22,7 @@ class MockRunner:
     def __init__(
         self, store: db.Database, *, clock: Callable[[], float] = time,
         controller_clock: Callable[[], float] = monotonic,
+        enable_controller: bool | None = None, state_provider: StateProvider | None = None,
     ) -> None:
         self._store = store
         self._clock = clock
@@ -33,7 +35,10 @@ class MockRunner:
             }
         self.controller = Controller(device_types, self._verify_token, clock=controller_clock,
                                      wall_clock=clock)
-        self._engine = Engine(store, self.controller, clock)
+        enabled = config.enable_controller if enable_controller is None else enable_controller
+        self._actuate = self.controller.command if enabled else None
+        self._state = self.controller if state_provider is None else state_provider
+        self._engine = Engine(store, self._state, clock)
 
     def open_session(self, user: str) -> str:
         if user not in DEMO_TARGETS:
@@ -46,7 +51,7 @@ class MockRunner:
         if tool not in TOOL_NAMES:
             raise ValueError("unknown_tool")
         handlers = ToolHandlers(self._sessions[session], self._store, self._engine,
-                                self.controller, self.controller.command)
+                                self._state, self._actuate)
         return getattr(handlers, tool)(**params)
 
     def _verify_token(

@@ -1,6 +1,7 @@
 from contextlib import redirect_stdout
 from inspect import signature
 from io import StringIO
+import json
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest import TestCase
@@ -105,6 +106,33 @@ class TestMockFlow(TestCase):
 
 
 class TestMockCLIs(TestCase):
+    def test_list_hides_expired_leases_and_shows_seconds_remaining(self) -> None:
+        with TemporaryDirectory() as temp:
+            path = str(Path(temp) / "demo.sqlite3")
+            store = db.Database(path)
+            now = 1000.0
+
+            def clock() -> float:
+                return now
+
+            try:
+                runner = MockRunner(store, clock=clock, controller_clock=clock)
+                session = runner.open_session("user1")
+                expired = runner.call(session, "propose_action", device_id="front-door",
+                                      action="unlock", params={"duration_s": 1})
+                live = runner.call(session, "propose_action", device_id="pump-1",
+                                   action="run", params={"duration_s": 1})
+                assert expired.lease_id and live.lease_id
+                now += config.CRITICAL_LEASE_TTL_S
+                with (patch("approver.approve.ApproverAPI", side_effect=lambda db: ApproverAPI(db, clock)),
+                      redirect_stdout(StringIO()) as output):
+                    assert approve_cli(["--db", path, "--user", "user1", "list"]) == 0
+                entry, = json.loads(output.getvalue())
+                assert entry["lease_id"] == live.lease_id
+                assert entry["seconds_remaining"] == config.HIGH_LEASE_TTL_S - config.CRITICAL_LEASE_TTL_S
+            finally:
+                store.close()
+
     def test_script_and_side_channel_use_same_database(self) -> None:
         with TemporaryDirectory() as temp, redirect_stdout(StringIO()) as output:
             path = str(Path(temp) / "demo.sqlite3")

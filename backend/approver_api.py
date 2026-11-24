@@ -15,6 +15,7 @@ class PendingLease:
     action: str
     params: str
     expires_at: float
+    seconds_remaining: float
 
 
 class ApproverAPI:
@@ -24,14 +25,15 @@ class ApproverAPI:
 
     def list_pending(self, user_id: str) -> list[PendingLease]:
         with self._db.transaction() as conn:
+            now = self._clock()
             rows = conn.execute(
                 """SELECT lease_id, device_id, action, params, expires_at
                    FROM leases JOIN devices USING (user_id, device_id)
                    WHERE user_id = ? AND status = 'PENDING' AND expires_at > ?
                      AND json_extract(manifest, '$.approval.required') = 1
-                   ORDER BY expires_at, lease_id""", (user_id, self._clock()),
+                   ORDER BY expires_at, lease_id""", (user_id, now),
             )
-            return [PendingLease(*row) for row in rows]
+            return [PendingLease(*row, seconds_remaining=row["expires_at"] - now) for row in rows]
 
     def approve(self, lease_id: str, *, user_id: str | None = None) -> bool:
         return self._transition(lease_id, "approve", user_id)

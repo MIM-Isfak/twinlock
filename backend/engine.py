@@ -1,3 +1,4 @@
+import json
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from fractions import Fraction
@@ -8,7 +9,7 @@ from typing import Any
 from backend import db, lease, policy
 from backend.policy import Decision
 from backend.state import StateProvider
-from wizard.validator import is_identifier
+from wizard.validator import is_identifier, is_number
 
 
 @dataclass(frozen=True)
@@ -16,6 +17,7 @@ class Result:
     status: str
     reason: str | None = None
     lease_id: str | None = None
+    blocked_by: str | None = None
 
 
 class Engine:
@@ -33,6 +35,8 @@ class Engine:
             params = dict(params)
         with self._store.transaction() as conn:
             now = self._clock()
+            if not self._store.enable_backend_policy:
+                return self._propose_without_policy(conn, user_id, device_id, action, params, now)
             recent = db.recent_proposals(conn, user_id, now)
             rate = policy.check_proposal_rate(recent)
             if rate != policy.ALLOWED:
@@ -71,6 +75,23 @@ class Engine:
             outcome = Decision("pending_approval" if required else "approved")
             return _report(conn, user_id, "propose", now, outcome, lease_id)
 
+    def _propose_without_policy(
+        self, conn: Connection, user_id: str, device_id: str, action: str,
+        params: Mapping[str, object], now: float,
+    ) -> Result:
+        device = db.get_device(conn, user_id, device_id) if is_identifier(device_id) else None
+        if device is None:
+            return _report(conn, user_id, "propose", now, Decision("refused", "device_not_found"))
+        if not _can_store_action(action, params):
+            return _report(conn, user_id, "propose", now, Decision("refused", "invalid_tool_payload"))
+        state = self._state.get_state(device_id)
+        lease_id = lease.create_lease(
+            conn, lease.Lease(user_id, device_id, action, dict(params),
+                              state.version if state is not None else 0, [], "PENDING"),
+            now + device["approval"]["ttl_s"],
+        )
+        return _report(conn, user_id, "propose", now, Decision("approved"), lease_id)
+
     def execute(self, user_id: str, lease_id: str) -> Result:
         with self._store.transaction() as conn:
             now = self._clock()
@@ -81,7 +102,9 @@ class Engine:
             if bound is None:
                 return _report(conn, user_id, "execute", now, Decision("refused", "lease_not_found"))
             device = db.get_device(conn, user_id, bound.device_id)
-            needs_approval = device is None or device["approval"]["required"]
+            needs_approval = self._store.enable_backend_policy and (
+                device is None or device["approval"]["required"]
+            )
             if bound.status == "PENDING" and needs_approval:
                 outcome = Decision("pending_approval")
             elif bound.status in {"APPROVED", "PENDING"}:
@@ -93,6 +116,8 @@ class Engine:
     def _execute_authorized(
         self, conn: Connection, lease_id: str, bound: lease.Lease, device: dict[str, Any] | None,
     ) -> tuple[Decision, float]:
+        if not self._store.enable_backend_policy:
+            return self._consume(conn, lease_id, bound)
         action = policy.check_action(bound.user_id, device, bound.action, bound.params)
         if device is None or action != policy.ALLOWED:
             return self._invalidate(conn, lease_id, bound, action)
@@ -110,12 +135,16 @@ class Engine:
 
         if budget != policy.ALLOWED:
             return budget, now
+        return self._consume(conn, lease_id, bound)
+
+    def _consume(self, conn: Connection, lease_id: str, bound: lease.Lease) -> tuple[Decision, float]:
         now = self._clock()
         if not lease.consume_lease(conn, bound.user_id, lease_id, now, prior_status=bound.status):
             lease.expire_lease(conn, bound.user_id, lease_id, now)
             return Decision("refused", "lease_expired"), now
-        db.record_run(conn, bound.user_id, lease_id, bound.device_id,
-                      bound.params.get("duration_s", 0), now)
+        duration = bound.params.get("duration_s", 0)
+        if is_number(duration) and duration >= 0:
+            db.record_run(conn, bound.user_id, lease_id, bound.device_id, duration, now)
         return Decision("executed"), now
 
     def _invalidate(
@@ -125,6 +154,17 @@ class Engine:
         lease.expire_lease(conn, bound.user_id, lease_id, now)
         lease.invalidate_lease(conn, bound.user_id, lease_id, now, prior_status=bound.status)
         return outcome, now
+
+
+def _can_store_action(action: str, params: Mapping[str, object]) -> bool:
+    if not isinstance(action, str) or not isinstance(params, Mapping):
+        return False
+    try:
+        action.encode("utf-8")
+        json.dumps(dict(params), allow_nan=False)
+    except (TypeError, ValueError, RecursionError):
+        return False
+    return True
 
 
 def _check_budget(

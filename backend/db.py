@@ -61,7 +61,11 @@ CREATE INDEX IF NOT EXISTS audit_by_user ON audit_log (user_id, event, occurred_
 
 
 class Database:
-    def __init__(self, path: str | Path = ":memory:") -> None:
+    def __init__(
+        self, path: str | Path = ":memory:", *, enable_backend_policy: bool | None = None,
+    ) -> None:
+        self.enable_backend_policy = (config.enable_backend_policy if enable_backend_policy is None
+                                      else enable_backend_policy)
         self._lock = Lock()
         self._conn = sqlite3.connect(path, isolation_level=None, check_same_thread=False)
         self._conn.row_factory = sqlite3.Row
@@ -86,11 +90,12 @@ class Database:
     def register_device(self, manifest: Mapping[str, Any]) -> None:
         device = validate_manifest(manifest)
         with self.transaction() as conn:
-            count = conn.execute(
-                "SELECT COUNT(*) FROM devices WHERE user_id = ?", (device["owner"],)
-            ).fetchone()[0]
-            if count >= config.DEVICES_PER_USER:
-                raise ManifestError("device_quota_exceeded")
+            if self.enable_backend_policy:
+                count = conn.execute(
+                    "SELECT COUNT(*) FROM devices WHERE user_id = ?", (device["owner"],)
+                ).fetchone()[0]
+                if count >= config.DEVICES_PER_USER:
+                    raise ManifestError("device_quota_exceeded")
             if conn.execute(
                 "SELECT 1 FROM devices WHERE device_id = ?", (device["id"],)
             ).fetchone():

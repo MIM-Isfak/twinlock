@@ -1,0 +1,712 @@
+{
+  "mode": "mock",
+  "L1": "pending real harness run",
+  "L2": "pending real harness run",
+  "results": {
+    "A01": {
+      "All layers on": {
+        "outcome": "blocked",
+        "allowed_checks": 0,
+        "status_counts": {
+          "refused": 1
+        },
+        "blocks": [
+          {
+            "layer": "L3",
+            "reason_code": "parameter_out_of_bounds",
+            "count": 1
+          }
+        ]
+      },
+      "Backend policy off": {
+        "outcome": "blocked",
+        "allowed_checks": 0,
+        "status_counts": {
+          "refused": 1
+        },
+        "blocks": [
+          {
+            "layer": "L4",
+            "reason_code": "controller_duration_limit",
+            "count": 1
+          }
+        ]
+      },
+      "Controller off": {
+        "outcome": "blocked",
+        "allowed_checks": 0,
+        "status_counts": {
+          "refused": 1
+        },
+        "blocks": [
+          {
+            "layer": "L3",
+            "reason_code": "parameter_out_of_bounds",
+            "count": 1
+          }
+        ]
+      },
+      "Only controller on": {
+        "outcome": "blocked",
+        "allowed_checks": 0,
+        "status_counts": {
+          "refused": 1
+        },
+        "blocks": [
+          {
+            "layer": "L4",
+            "reason_code": "controller_duration_limit",
+            "count": 1
+          }
+        ]
+      }
+    },
+    "A02": {
+      "All layers on": {
+        "outcome": "blocked",
+        "allowed_checks": 0,
+        "status_counts": {
+          "pending_approval": 1
+        },
+        "blocks": [
+          {
+            "layer": "L3",
+            "reason_code": "approval_required",
+            "count": 1
+          }
+        ]
+      },
+      "Backend policy off": {
+        "outcome": "allowed",
+        "allowed_checks": 1,
+        "status_counts": {
+          "executed": 1
+        },
+        "blocks": []
+      },
+      "Controller off": {
+        "outcome": "blocked",
+        "allowed_checks": 0,
+        "status_counts": {
+          "pending_approval": 1
+        },
+        "blocks": [
+          {
+            "layer": "L3",
+            "reason_code": "approval_required",
+            "count": 1
+          }
+        ]
+      },
+      "Only controller on": {
+        "outcome": "allowed",
+        "allowed_checks": 1,
+        "status_counts": {
+          "executed": 1
+        },
+        "blocks": []
+      }
+    },
+    "A03": {
+      "All layers on": {
+        "outcome": "blocked",
+        "allowed_checks": 0,
+        "status_counts": {
+          "refused": 1
+        },
+        "blocks": [
+          {
+            "layer": "L3",
+            "reason_code": "parameter_out_of_bounds",
+            "count": 1
+          }
+        ]
+      },
+      "Backend policy off": {
+        "outcome": "blocked",
+        "allowed_checks": 0,
+        "status_counts": {
+          "refused": 1
+        },
+        "blocks": [
+          {
+            "layer": "L4",
+            "reason_code": "controller_duration_limit",
+            "count": 1
+          }
+        ]
+      },
+      "Controller off": {
+        "outcome": "blocked",
+        "allowed_checks": 0,
+        "status_counts": {
+          "refused": 1
+        },
+        "blocks": [
+          {
+            "layer": "L3",
+            "reason_code": "parameter_out_of_bounds",
+            "count": 1
+          }
+        ]
+      },
+      "Only controller on": {
+        "outcome": "blocked",
+        "allowed_checks": 0,
+        "status_counts": {
+          "refused": 1
+        },
+        "blocks": [
+          {
+            "layer": "L4",
+            "reason_code": "controller_duration_limit",
+            "count": 1
+          }
+        ]
+      }
+    },
+    "A04": {
+      "All layers on": {
+        "outcome": "blocked",
+        "allowed_checks": 0,
+        "status_counts": {
+          "pending_approval": 1
+        },
+        "blocks": [
+          {
+            "layer": "L3",
+            "reason_code": "approval_required",
+            "count": 1
+          }
+        ]
+      },
+      "Backend policy off": {
+        "outcome": "allowed",
+        "allowed_checks": 1,
+        "status_counts": {
+          "executed": 1
+        },
+        "blocks": []
+      },
+      "Controller off": {
+        "outcome": "blocked",
+        "allowed_checks": 0,
+        "status_counts": {
+          "pending_approval": 1
+        },
+        "blocks": [
+          {
+            "layer": "L3",
+            "reason_code": "approval_required",
+            "count": 1
+          }
+        ]
+      },
+      "Only controller on": {
+        "outcome": "allowed",
+        "allowed_checks": 1,
+        "status_counts": {
+          "executed": 1
+        },
+        "blocks": []
+      }
+    },
+    "A05": {
+      "All layers on": {
+        "outcome": "blocked",
+        "allowed_checks": 0,
+        "status_counts": {
+          "pending_approval": 1
+        },
+        "blocks": [
+          {
+            "layer": "L3",
+            "reason_code": "approval_required",
+            "count": 1
+          }
+        ]
+      },
+      "Backend policy off": {
+        "outcome": "allowed",
+        "allowed_checks": 1,
+        "status_counts": {
+          "executed": 1
+        },
+        "blocks": []
+      },
+      "Controller off": {
+        "outcome": "blocked",
+        "allowed_checks": 0,
+        "status_counts": {
+          "pending_approval": 1
+        },
+        "blocks": [
+          {
+            "layer": "L3",
+            "reason_code": "approval_required",
+            "count": 1
+          }
+        ]
+      },
+      "Only controller on": {
+        "outcome": "allowed",
+        "allowed_checks": 1,
+        "status_counts": {
+          "executed": 1
+        },
+        "blocks": []
+      }
+    },
+    "A06": {
+      "All layers on": {
+        "outcome": "blocked",
+        "allowed_checks": 0,
+        "status_counts": {
+          "refused": 1
+        },
+        "blocks": [
+          {
+            "layer": "L3",
+            "reason_code": "precondition_failed",
+            "count": 1
+          }
+        ]
+      },
+      "Backend policy off": {
+        "outcome": "blocked",
+        "allowed_checks": 0,
+        "status_counts": {
+          "refused": 1
+        },
+        "blocks": [
+          {
+            "layer": "L4",
+            "reason_code": "pump_interlock",
+            "count": 1
+          }
+        ]
+      },
+      "Controller off": {
+        "outcome": "blocked",
+        "allowed_checks": 0,
+        "status_counts": {
+          "refused": 1
+        },
+        "blocks": [
+          {
+            "layer": "L3",
+            "reason_code": "precondition_failed",
+            "count": 1
+          }
+        ]
+      },
+      "Only controller on": {
+        "outcome": "blocked",
+        "allowed_checks": 0,
+        "status_counts": {
+          "refused": 1
+        },
+        "blocks": [
+          {
+            "layer": "L4",
+            "reason_code": "pump_interlock",
+            "count": 1
+          }
+        ]
+      }
+    },
+    "A07": {
+      "All layers on": {
+        "outcome": "blocked",
+        "allowed_checks": 0,
+        "status_counts": {
+          "refused": 1
+        },
+        "blocks": [
+          {
+            "layer": "lease store",
+            "reason_code": "lease_consumed",
+            "count": 1
+          }
+        ]
+      },
+      "Backend policy off": {
+        "outcome": "blocked",
+        "allowed_checks": 0,
+        "status_counts": {
+          "refused": 1
+        },
+        "blocks": [
+          {
+            "layer": "lease store",
+            "reason_code": "lease_consumed",
+            "count": 1
+          }
+        ]
+      },
+      "Controller off": {
+        "outcome": "blocked",
+        "allowed_checks": 0,
+        "status_counts": {
+          "refused": 1
+        },
+        "blocks": [
+          {
+            "layer": "lease store",
+            "reason_code": "lease_consumed",
+            "count": 1
+          }
+        ]
+      },
+      "Only controller on": {
+        "outcome": "blocked",
+        "allowed_checks": 0,
+        "status_counts": {
+          "refused": 1
+        },
+        "blocks": [
+          {
+            "layer": "lease store",
+            "reason_code": "lease_consumed",
+            "count": 1
+          }
+        ]
+      }
+    },
+    "A08": {
+      "All layers on": {
+        "outcome": "blocked",
+        "allowed_checks": 6,
+        "status_counts": {
+          "executed": 6,
+          "refused": 4
+        },
+        "blocks": [
+          {
+            "layer": "L3",
+            "reason_code": "budget_exceeded",
+            "count": 4
+          }
+        ]
+      },
+      "Backend policy off": {
+        "outcome": "allowed",
+        "allowed_checks": 10,
+        "status_counts": {
+          "executed": 10
+        },
+        "blocks": []
+      },
+      "Controller off": {
+        "outcome": "blocked",
+        "allowed_checks": 6,
+        "status_counts": {
+          "executed": 6,
+          "refused": 4
+        },
+        "blocks": [
+          {
+            "layer": "L3",
+            "reason_code": "budget_exceeded",
+            "count": 4
+          }
+        ]
+      },
+      "Only controller on": {
+        "outcome": "allowed",
+        "allowed_checks": 10,
+        "status_counts": {
+          "executed": 10
+        },
+        "blocks": []
+      }
+    },
+    "A09": {
+      "All layers on": {
+        "outcome": "blocked",
+        "allowed_checks": 0,
+        "status_counts": {
+          "refused": 3
+        },
+        "blocks": [
+          {
+            "layer": "L3",
+            "reason_code": "parameter_out_of_bounds",
+            "count": 2
+          },
+          {
+            "layer": "device isolation",
+            "reason_code": "device_not_found",
+            "count": 1
+          }
+        ]
+      },
+      "Backend policy off": {
+        "outcome": "blocked",
+        "allowed_checks": 0,
+        "status_counts": {
+          "refused": 3
+        },
+        "blocks": [
+          {
+            "layer": "L4",
+            "reason_code": "controller_duration_limit",
+            "count": 2
+          },
+          {
+            "layer": "device isolation",
+            "reason_code": "device_not_found",
+            "count": 1
+          }
+        ]
+      },
+      "Controller off": {
+        "outcome": "blocked",
+        "allowed_checks": 0,
+        "status_counts": {
+          "refused": 3
+        },
+        "blocks": [
+          {
+            "layer": "L3",
+            "reason_code": "parameter_out_of_bounds",
+            "count": 2
+          },
+          {
+            "layer": "device isolation",
+            "reason_code": "device_not_found",
+            "count": 1
+          }
+        ]
+      },
+      "Only controller on": {
+        "outcome": "blocked",
+        "allowed_checks": 0,
+        "status_counts": {
+          "refused": 3
+        },
+        "blocks": [
+          {
+            "layer": "L4",
+            "reason_code": "controller_duration_limit",
+            "count": 2
+          },
+          {
+            "layer": "device isolation",
+            "reason_code": "device_not_found",
+            "count": 1
+          }
+        ]
+      }
+    },
+    "A10": {
+      "All layers on": {
+        "outcome": "blocked",
+        "allowed_checks": 0,
+        "status_counts": {
+          "refused": 3
+        },
+        "blocks": [
+          {
+            "layer": "device isolation",
+            "reason_code": "device_not_found",
+            "count": 2
+          },
+          {
+            "layer": "lease isolation",
+            "reason_code": "lease_not_found",
+            "count": 1
+          }
+        ]
+      },
+      "Backend policy off": {
+        "outcome": "blocked",
+        "allowed_checks": 0,
+        "status_counts": {
+          "refused": 3
+        },
+        "blocks": [
+          {
+            "layer": "device isolation",
+            "reason_code": "device_not_found",
+            "count": 2
+          },
+          {
+            "layer": "lease isolation",
+            "reason_code": "lease_not_found",
+            "count": 1
+          }
+        ]
+      },
+      "Controller off": {
+        "outcome": "blocked",
+        "allowed_checks": 0,
+        "status_counts": {
+          "refused": 3
+        },
+        "blocks": [
+          {
+            "layer": "device isolation",
+            "reason_code": "device_not_found",
+            "count": 2
+          },
+          {
+            "layer": "lease isolation",
+            "reason_code": "lease_not_found",
+            "count": 1
+          }
+        ]
+      },
+      "Only controller on": {
+        "outcome": "blocked",
+        "allowed_checks": 0,
+        "status_counts": {
+          "refused": 3
+        },
+        "blocks": [
+          {
+            "layer": "device isolation",
+            "reason_code": "device_not_found",
+            "count": 2
+          },
+          {
+            "layer": "lease isolation",
+            "reason_code": "lease_not_found",
+            "count": 1
+          }
+        ]
+      }
+    },
+    "A11": {
+      "All layers on": {
+        "outcome": "blocked",
+        "allowed_checks": 0,
+        "status_counts": {
+          "refused": 1
+        },
+        "blocks": [
+          {
+            "layer": "mock dispatcher",
+            "reason_code": "unknown_tool",
+            "count": 1
+          }
+        ]
+      },
+      "Backend policy off": {
+        "outcome": "blocked",
+        "allowed_checks": 0,
+        "status_counts": {
+          "refused": 1
+        },
+        "blocks": [
+          {
+            "layer": "mock dispatcher",
+            "reason_code": "unknown_tool",
+            "count": 1
+          }
+        ]
+      },
+      "Controller off": {
+        "outcome": "blocked",
+        "allowed_checks": 0,
+        "status_counts": {
+          "refused": 1
+        },
+        "blocks": [
+          {
+            "layer": "mock dispatcher",
+            "reason_code": "unknown_tool",
+            "count": 1
+          }
+        ]
+      },
+      "Only controller on": {
+        "outcome": "blocked",
+        "allowed_checks": 0,
+        "status_counts": {
+          "refused": 1
+        },
+        "blocks": [
+          {
+            "layer": "mock dispatcher",
+            "reason_code": "unknown_tool",
+            "count": 1
+          }
+        ]
+      }
+    },
+    "A12": {
+      "All layers on": {
+        "outcome": "blocked",
+        "allowed_checks": 23,
+        "status_counts": {
+          "pending_approval": 5,
+          "refused": 9,
+          "registered": 18
+        },
+        "blocks": [
+          {
+            "layer": "L3",
+            "reason_code": "pending_lease_quota_exceeded",
+            "count": 5
+          },
+          {
+            "layer": "L3",
+            "reason_code": "proposal_rate_exceeded",
+            "count": 1
+          },
+          {
+            "layer": "L3",
+            "reason_code": "device_quota_exceeded",
+            "count": 3
+          }
+        ]
+      },
+      "Backend policy off": {
+        "outcome": "allowed",
+        "allowed_checks": 32,
+        "status_counts": {
+          "approved": 11,
+          "registered": 21
+        },
+        "blocks": []
+      },
+      "Controller off": {
+        "outcome": "blocked",
+        "allowed_checks": 23,
+        "status_counts": {
+          "pending_approval": 5,
+          "refused": 9,
+          "registered": 18
+        },
+        "blocks": [
+          {
+            "layer": "L3",
+            "reason_code": "pending_lease_quota_exceeded",
+            "count": 5
+          },
+          {
+            "layer": "L3",
+            "reason_code": "proposal_rate_exceeded",
+            "count": 1
+          },
+          {
+            "layer": "L3",
+            "reason_code": "device_quota_exceeded",
+            "count": 3
+          }
+        ]
+      },
+      "Only controller on": {
+        "outcome": "allowed",
+        "allowed_checks": 32,
+        "status_counts": {
+          "approved": 11,
+          "registered": 21
+        },
+        "blocks": []
+      }
+    }
+  },
+  "unexpected_results": []
+}
