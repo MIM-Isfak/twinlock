@@ -61,10 +61,11 @@ class Engine:
                 return _report(conn, user_id, "propose", now, budget)
 
             required = approval["required"]
+            # Approval-free leases can be consumed from PENDING under the registered policy.
             lease_id = lease.create_lease(
                 conn,
                 lease.Lease(user_id, device_id, action, dict(params), state.version, evidence,
-                            "PENDING" if required else "APPROVED"),
+                            "PENDING"),
                 checked_at + approval["ttl_s"],
             )
             outcome = Decision("pending_approval" if required else "approved")
@@ -79,37 +80,38 @@ class Engine:
             bound = lease.get_lease(conn, user_id, lease_id)
             if bound is None:
                 return _report(conn, user_id, "execute", now, Decision("refused", "lease_not_found"))
-            if bound.status == "PENDING":
+            device = db.get_device(conn, user_id, bound.device_id)
+            needs_approval = device is None or device["approval"]["required"]
+            if bound.status == "PENDING" and needs_approval:
                 outcome = Decision("pending_approval")
-            elif bound.status == "APPROVED":
-                outcome, now = self._execute_approved(conn, lease_id, bound)
+            elif bound.status in {"APPROVED", "PENDING"}:
+                outcome, now = self._execute_authorized(conn, lease_id, bound, device)
             else:
                 outcome = Decision("refused", f"lease_{bound.status.lower()}")
             return _report(conn, user_id, "execute", now, outcome, lease_id)
 
-    def _execute_approved(
-        self, conn: Connection, lease_id: str, bound: lease.Lease,
+    def _execute_authorized(
+        self, conn: Connection, lease_id: str, bound: lease.Lease, device: dict[str, Any] | None,
     ) -> tuple[Decision, float]:
-        device = db.get_device(conn, bound.user_id, bound.device_id)
         action = policy.check_action(bound.user_id, device, bound.action, bound.params)
         if device is None or action != policy.ALLOWED:
-            return self._invalidate(conn, lease_id, bound.user_id, action)
+            return self._invalidate(conn, lease_id, bound, action)
 
         state = self._state.get_state(bound.device_id)
         budget = _check_budget(conn, bound.user_id, device, bound.params, self._clock())
         now = self._clock()
         check, evidence = policy.check_preconditions(device["preconditions"], state, now)
         if check != policy.ALLOWED:
-            return self._invalidate(conn, lease_id, bound.user_id, check)
+            return self._invalidate(conn, lease_id, bound, check)
         if state is None or state.version != bound.state_version or evidence != bound.precondition_values:
             return self._invalidate(
-                conn, lease_id, bound.user_id, Decision("refused", "state_changed"),
+                conn, lease_id, bound, Decision("refused", "state_changed"),
             )
 
         if budget != policy.ALLOWED:
             return budget, now
         now = self._clock()
-        if not lease.consume_lease(conn, bound.user_id, lease_id, now):
+        if not lease.consume_lease(conn, bound.user_id, lease_id, now, prior_status=bound.status):
             lease.expire_lease(conn, bound.user_id, lease_id, now)
             return Decision("refused", "lease_expired"), now
         db.record_run(conn, bound.user_id, lease_id, bound.device_id,
@@ -117,11 +119,11 @@ class Engine:
         return Decision("executed"), now
 
     def _invalidate(
-        self, conn: Connection, lease_id: str, user_id: str, outcome: Decision,
+        self, conn: Connection, lease_id: str, bound: lease.Lease, outcome: Decision,
     ) -> tuple[Decision, float]:
         now = self._clock()
-        lease.expire_lease(conn, user_id, lease_id, now)
-        lease.invalidate_lease(conn, user_id, lease_id, now)
+        lease.expire_lease(conn, bound.user_id, lease_id, now)
+        lease.invalidate_lease(conn, bound.user_id, lease_id, now, prior_status=bound.status)
         return outcome, now
 
 

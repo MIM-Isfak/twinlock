@@ -1,5 +1,6 @@
 import json
 import sqlite3
+from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Any
 from uuid import uuid4
@@ -54,23 +55,49 @@ def get_lease(conn: sqlite3.Connection, user_id: str, lease_id: str) -> Lease | 
 
 def count_pending(conn: sqlite3.Connection, user_id: str, now: float) -> int:
     return conn.execute(
-        """SELECT COUNT(*) FROM leases
-           WHERE user_id = ? AND status = 'PENDING' AND expires_at > ?""",
+        """SELECT COUNT(*) FROM leases JOIN devices USING (user_id, device_id)
+           WHERE user_id = ? AND status = 'PENDING' AND expires_at > ?
+             AND json_extract(manifest, '$.approval.required') = 1""",
         (user_id, now),
     ).fetchone()[0]
 
 
-def invalidate_lease(conn: sqlite3.Connection, user_id: str, lease_id: str, now: float) -> None:
+def invalidate_lease(
+    conn: sqlite3.Connection, user_id: str, lease_id: str, now: float,
+    *, prior_status: str = "APPROVED",
+) -> None:
     conn.execute(
         """UPDATE leases SET status = 'INVALIDATED'
-           WHERE user_id = ? AND lease_id = ? AND status = 'APPROVED' AND expires_at > ?""",
-        (user_id, lease_id, now),
+           WHERE user_id = ? AND lease_id = ? AND status = ? AND expires_at > ?""",
+        (user_id, lease_id, prior_status, now),
     )
 
 
-def consume_lease(conn: sqlite3.Connection, user_id: str, lease_id: str, now: float) -> bool:
+def consume_lease(
+    conn: sqlite3.Connection, user_id: str, lease_id: str, now: float,
+    *, prior_status: str = "APPROVED",
+) -> bool:
     return conn.execute(
         """UPDATE leases SET status = 'CONSUMED'
-           WHERE user_id = ? AND lease_id = ? AND status = 'APPROVED' AND expires_at > ?""",
-        (user_id, lease_id, now),
+           WHERE user_id = ? AND lease_id = ? AND status = ? AND expires_at > ?""",
+        (user_id, lease_id, prior_status, now),
     ).rowcount == 1
+
+
+def redeem_command(
+    conn: sqlite3.Connection, lease_id: str, device_id: str, action: str,
+    params: Mapping[str, object], now: float,
+) -> float | None:
+    row = conn.execute(
+        """SELECT params, expires_at FROM leases
+           WHERE lease_id = ? AND device_id = ? AND action = ?
+             AND status = 'CONSUMED' AND expires_at > ?""",
+        (lease_id, device_id, action, now),
+    ).fetchone()
+    if row is None or json.loads(row["params"]) != params:
+        return None
+    if not conn.execute(
+        "INSERT OR IGNORE INTO controller_receipts (lease_id) VALUES (?)", (lease_id,),
+    ).rowcount:
+        return None
+    return row["expires_at"]

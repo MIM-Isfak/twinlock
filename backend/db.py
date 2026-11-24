@@ -33,6 +33,9 @@ CREATE TABLE IF NOT EXISTS leases (
     FOREIGN KEY (user_id, device_id) REFERENCES devices (user_id, device_id)
 );
 CREATE INDEX IF NOT EXISTS leases_by_user ON leases (user_id, status, expires_at);
+CREATE TABLE IF NOT EXISTS controller_receipts (
+    lease_id TEXT PRIMARY KEY REFERENCES leases (lease_id)
+);
 CREATE TABLE IF NOT EXISTS run_ledger (
     user_id TEXT NOT NULL,
     lease_id TEXT NOT NULL PRIMARY KEY,
@@ -103,6 +106,13 @@ def get_device(conn: sqlite3.Connection, user_id: str, device_id: str) -> dict[s
         "SELECT manifest FROM devices WHERE user_id = ? AND device_id = ?", (user_id, device_id)
     ).fetchone()
     return json.loads(row["manifest"]) if row else None
+
+
+def list_devices(conn: sqlite3.Connection, user_id: str) -> list[dict[str, Any]]:
+    rows = conn.execute(
+        "SELECT manifest FROM devices WHERE user_id = ? ORDER BY device_id", (user_id,),
+    )
+    return [json.loads(row["manifest"]) for row in rows]
 
 
 def recent_proposals(conn: sqlite3.Connection, user_id: str, now: float) -> int:
