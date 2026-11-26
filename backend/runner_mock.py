@@ -10,12 +10,11 @@ from backend import config, db, lease
 from backend.demo import register_demo_devices
 from backend.engine import Engine, Result
 from backend.state import StateProvider
-from backend.tools import ToolHandlers
+from backend.tools import TOOL_NAMES, ToolHandlers
 from simulator.controller import Controller
 
 DEMO_TARGETS = {"user1": "pump-1", "user2": "hall-light"}
 ACTIONS = {"pump": "run", "door_lock": "unlock", "switch": "on"}
-TOOL_NAMES = ("list_devices", "get_device_state", "propose_action", "execute_action")
 
 
 class MockRunner:
@@ -43,7 +42,7 @@ class MockRunner:
     def open_session(self, user: str) -> str:
         if user not in DEMO_TARGETS:
             raise ValueError("unknown_demo_user")
-        session = uuid4().hex
+        session = str(uuid4())
         self._sessions[session] = user
         return session
 

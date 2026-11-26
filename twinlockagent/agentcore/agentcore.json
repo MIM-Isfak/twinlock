@@ -1,0 +1,20 @@
+{
+  "name": "twinlockagent",
+  "version": 2,
+  "managedBy": "CDK",
+  "runtimes": [],
+  "memories": [],
+  "knowledgeBases": [],
+  "credentials": [],
+  "evaluators": [],
+  "onlineEvalConfigs": [],
+  "agentCoreGateways": [],
+  "policyEngines": [],
+  "configBundles": [],
+  "harnesses": [
+    {
+      "name": "twinlock",
+      "path": "app/twinlock"
+    }
+  ]
+}

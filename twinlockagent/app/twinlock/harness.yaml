@@ -1,0 +1,53 @@
+# AgentCore loads system-prompt.md from this directory.
+name: twinlock
+model:
+  bedrockModelConfig:
+    modelId: us.amazon.nova-2-lite-v1:0
+
+tools: [
+  {
+    "name": "list_devices",
+    "type": "inline_function",
+    "config": {"inlineFunction": {
+      "description": "List devices registered to the current session's user.",
+      "inputSchema": {"type": "object", "properties": {}, "required": [], "additionalProperties": false}
+    }}
+  },
+  {
+    "name": "get_device_state",
+    "type": "inline_function",
+    "config": {"inlineFunction": {
+      "description": "Read a registered device's current state.",
+      "inputSchema": {"type": "object", "properties": {"device_id": {"type": "string"}},
+                      "required": ["device_id"], "additionalProperties": false}
+    }}
+  },
+  {
+    "name": "propose_action",
+    "type": "inline_function",
+    "config": {"inlineFunction": {
+      "description": "Request a lease for one bounded action. Use duration_s for a timed action and empty params for a switch.",
+      "inputSchema": {"type": "object",
+                      "properties": {"device_id": {"type": "string"}, "action": {"type": "string"},
+                                     "params": {"type": "object", "properties": {"duration_s": {"type": "number"}},
+                                                "additionalProperties": false}},
+                      "required": ["device_id", "action", "params"], "additionalProperties": false}
+    }}
+  },
+  {
+    "name": "execute_action",
+    "type": "inline_function",
+    "config": {"inlineFunction": {
+      "description": "Execute the action bound to an existing lease.",
+      "inputSchema": {"type": "object", "properties": {"lease_id": {"type": "string"}},
+                      "required": ["lease_id"], "additionalProperties": false}
+    }}
+  }
+]
+allowedTools: ["@list_devices", "@get_device_state", "@propose_action", "@execute_action"]
+skills: []
+memory:
+  disabled: {}
+maxIterations: 8
+timeoutSeconds: 120
+# TODO(verify-in-smoke-test): confirm the supported guardrail configuration.

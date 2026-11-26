@@ -8,6 +8,13 @@ from backend.state import StateProvider
 from wizard.validator import is_identifier
 
 Actuate = Callable[[str, str, Mapping[str, object], str], str | None]
+TOOL_ARGUMENTS = {
+    "list_devices": (),
+    "get_device_state": ("device_id",),
+    "propose_action": ("device_id", "action", "params"),
+    "execute_action": ("lease_id",),
+}
+TOOL_NAMES = tuple(TOOL_ARGUMENTS)
 
 
 class ToolHandlers:
