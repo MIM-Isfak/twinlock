@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TwinLock · Operations console</title>
+  <link rel="stylesheet" href="/app.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <header class="masthead">
+    <div class="shell masthead-inner">
+      <div class="brand"><span class="brand-mark" aria-hidden="true"></span>TwinLock</div>
+      <span class="simulator"><span aria-hidden="true"></span> Software simulator</span>
+    </div>
+  </header>
+  <main class="shell">
+    <section class="intro" aria-labelledby="page-title">
+      <div>
+        <span class="mode" id="mode">Connecting</span>
+        <h1 id="page-title">Operations console</h1>
+        <p>Secure AI agent control with independent human authorization.</p>
+      </div>
+      <div class="identity">
+        <label for="identity">Demo identity</label>
+        <div class="select-wrap">
+          <select id="identity" disabled>
+            <option value="user1">user1 · Pump and door</option>
+            <option value="user2">user2 · Hall light</option>
+          </select>
+        </div>
+      </div>
+    </section>
+    <p id="connection" class="connection" role="status" hidden></p>
+    <section class="workflow panel" aria-labelledby="workflow-title">
+      <div class="workflow-heading"><h2 id="workflow-title">Security workflow</h2><p>Approval-required action</p></div>
+      <ol aria-label="Approval-required action sequence">
+        <li>Request</li><li>Policy check</li><li class="human">Human approval</li><li>Execution</li><li>Audit</li>
+      </ol>
+    </section>
+    <section class="panel evidence" aria-labelledby="evidence-title">
+      <header class="panel-head"><div><h2 id="evidence-title">Verification evidence</h2><p>Archived offline and managed test results</p></div><span class="tag">Historical</span></header>
+      <div id="evidence" class="panel-body"><p class="empty-note">Loading saved evidence…</p></div>
+    </section>
+    <div class="dashboard">
+      <div class="primary">
+        <section class="panel chat" aria-labelledby="chat-title">
+          <header class="panel-head">
+            <div><h2 id="chat-title">Agent chat</h2><p id="chat-description">Connecting to the local runner.</p></div>
+            <span class="tag">Verified tool results</span>
+          </header>
+          <div id="transcript" class="transcript" role="log" aria-label="Agent conversation" tabindex="0">
+            <div class="empty"><strong>Connecting to TwinLock</strong><p>The session will appear here.</p></div>
+          </div>
+          <div class="compose">
+            <div class="suggestions" aria-label="Suggested prompts">
+              <button id="propose" type="button" disabled>Propose demo action</button>
+              <button id="execute" type="button" disabled>Execute existing lease</button>
+            </div>
+            <form id="chat-form">
+              <label class="visually-hidden" for="message">Message to the agent</label>
+              <input id="message" name="message" autocomplete="off" placeholder="Ask about a device or action" disabled required>
+              <button id="send" class="send" type="submit" disabled>Send</button>
+            </form>
+            <p id="turn-status" role="status" class="turn-status"></p>
+          </div>
+        </section>
+        <section class="panel audit" aria-labelledby="audit-title">
+          <header class="panel-head"><div><h2 id="audit-title">Security audit</h2><p>Recent events for the selected identity</p></div><span class="tag">Current session data</span></header>
+          <div id="audit" class="panel-body"><p class="empty-note">Loading audit events…</p></div>
+        </section>
+      </div>
+      <aside class="secondary" aria-label="Devices and lease">
+        <section class="panel" aria-labelledby="devices-title">
+          <header class="panel-head"><div><h2 id="devices-title">Authorized devices</h2><p>Current simulator state</p></div><span id="device-count" class="tag" aria-label="Device count">—</span></header>
+          <div id="devices" class="panel-body device-list"><p class="empty-note">Loading devices…</p></div>
+        </section>
+        <section class="panel lease-panel" aria-labelledby="lease-title">
+          <header class="panel-head"><div><h2 id="lease-title">Latest lease</h2><p>Approval via separate CLI</p></div><span id="lease-badge" class="tag">—</span></header>
+          <div id="lease" class="panel-body"><p class="empty-note">Loading lease…</p></div>
+        </section>
+      </aside>
+    </div>
+  </main>
+</body>
+</html>

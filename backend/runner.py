@@ -7,7 +7,7 @@ from threading import Event as ThreadEvent, Thread
 
 from backend import config, db
 from backend.engine import Result
-from backend.harness_client import Harness, HarnessClient, HarnessError, Stop, Text, ToolResult, ToolUse
+from backend.harness_client import Event, Harness, HarnessClient, HarnessError, Stop, Text, ToolResult, ToolUse
 from backend.harness_fake import FakeHarnessClient, demo_steps
 from backend.runner_mock import DEMO_TARGETS, MockRunner
 from backend.tools import TOOL_ARGUMENTS
@@ -21,6 +21,9 @@ class Session:
 
 class RunnerError(RuntimeError):
     """A local refusal with a stable, user-facing reason code."""
+
+
+Observer = Callable[[Event | ToolResult], None]
 
 
 def _contains_identity(value: object) -> bool:
@@ -43,10 +46,15 @@ def _tool_arguments(call: ToolUse) -> dict[str, object]:
 
 
 class ChatRunner:
-    def __init__(self, harness: Harness, local: MockRunner) -> None:
+    def __init__(self, harness: Harness, local: MockRunner, *, observe: Observer | None = None) -> None:
         self._harness = harness
         self._local = local
+        self._observe = observe
         self._sessions: dict[str, Session] = {}
+
+    @classmethod
+    def managed(cls, local: MockRunner, *, observe: Observer | None = None) -> "ChatRunner":
+        return cls(HarnessClient(), local, observe=observe)
 
     def open_session(self, authenticated_user: str) -> str:
         # The local dispatcher binds the authenticated user to this UUID for every handler call.
@@ -82,6 +90,9 @@ class ChatRunner:
                     raise
                 del self._sessions[session_id]
                 return refusal
+            if self._observe is not None:
+                for event in events:
+                    self._observe(event)
             calls = [event for event in events if isinstance(event, ToolUse)]
             stops = [event for event in events if isinstance(event, Stop)]
             valid_stop = len(stops) == 1 and events[-1] == stops[0]
@@ -113,7 +124,10 @@ class ChatRunner:
             results = []
             for call, args in zip(calls, arguments, strict=True):
                 value = self._dispatch(session_id, call.name, args)
-                results.append(ToolResult(call.id, value))
+                result = ToolResult(call.id, value)
+                results.append(result)
+                if self._observe is not None:
+                    self._observe(result)
                 status = value.get("status") if isinstance(value, dict) else None
                 if status in ("refused", "inconclusive"):
                     refusal = f"{status}: {value['reason']}"

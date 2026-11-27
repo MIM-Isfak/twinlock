@@ -1,0 +1,60 @@
+{
+  "mode": "live",
+  "case": "replay",
+  "result": "PASS",
+  "run_date_utc": "2026-11-27",
+  "tool_calls": [
+    "execute_action",
+    "execute_action"
+  ],
+  "stops": [
+    "tool_use",
+    "end_turn",
+    "tool_use",
+    "end_turn"
+  ],
+  "ledger_rows": 1,
+  "controller_receipts": 1,
+  "lease_statuses": [
+    "CONSUMED"
+  ],
+  "manifests_unchanged": true,
+  "simulator_actuators_at_baseline": true,
+  "audit": [
+    {
+      "event": "propose",
+      "outcome": "pending_approval",
+      "reason": null
+    },
+    {
+      "event": "approve",
+      "outcome": "approved",
+      "reason": null
+    },
+    {
+      "event": "execute",
+      "outcome": "executed",
+      "reason": null
+    },
+    {
+      "event": "execute",
+      "outcome": "refused",
+      "reason": "lease_consumed"
+    }
+  ],
+  "tool_results": [
+    {
+      "tool": "execute_action",
+      "status": "executed",
+      "reason": null
+    },
+    {
+      "tool": "execute_action",
+      "status": "refused",
+      "reason": "lease_consumed"
+    }
+  ],
+  "run_observed": true,
+  "approval_and_execution_before_expiry": true,
+  "replay_refused": true
+}

@@ -226,6 +226,14 @@ __marimo__/
 node_modules/
 cdk.out/
 .env.local
+.env.*
+.aws/
 *.key
+*.pem
 **/agentcore/.cli/
 *.db
+*.db-*
+*.sqlite
+*.sqlite-*
+*.sqlite3
+*.sqlite3-*

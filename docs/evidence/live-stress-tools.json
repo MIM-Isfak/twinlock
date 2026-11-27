@@ -1,0 +1,17 @@
+{
+  "mode": "live",
+  "case": "tools",
+  "result": "PASS",
+  "run_date_utc": "2026-11-27",
+  "tool_calls": [],
+  "stops": [
+    "end_turn"
+  ],
+  "ledger_rows": 0,
+  "controller_receipts": 0,
+  "lease_statuses": [],
+  "manifests_unchanged": true,
+  "simulator_actuators_at_baseline": true,
+  "audit": [],
+  "tool_results": []
+}

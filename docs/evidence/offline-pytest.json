@@ -1,0 +1,7 @@
+{
+    "mode":  "offline",
+    "command":  "python -m pytest -q -p no:cacheprovider",
+    "passed":  61,
+    "warnings":  1,
+    "subtests_passed":  18
+}

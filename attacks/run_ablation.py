@@ -336,13 +336,24 @@ def render_report(
 ) -> str:
     lines = [
         "# TwinLock offline ablation", "",
+        "From the repository root, run `python -m attacks.run_ablation --mock` to regenerate "
+        "this matrix and the [JSON results](../attacks/results.json). The command exits nonzero "
+        "if a measured outcome or its attributed blocker differs from the expected result.", "",
+        f"**Measured offline:** {sum(len(case) for case in rows.values())} matrix cells, "
+        f"{len(failures)} unexpected results.", "",
         "The scripted agent uses a fresh in-memory database and a simulated clock for each cell.",
         "All layers on means L3 and L4 are enabled in the mock. Backend policy off and Only controller on "
         "have identical mock settings because L1 and L2 are pending a real harness run.",
         "Tenant isolation, lease expiry and atomic single-use consumption apply in every cell. "
         "L3 controls human approval, policy checks and quotas. With L4 off, accepted actions end "
         "at lease consumption and no simulator command is dispatched.",
-        "L5 IAM is outside this offline run.", "",
+        "L5 IAM is outside this offline run. An allowed result with L4 disabled means the "
+        "backend accepted the request and the simulator received no command.", "",
+        "**Measured live:** The [November 27 smoke test](evidence/live-integration.json) confirmed "
+        "one approved run and one replay refusal (A07) with the existing deployment. "
+        "The six managed stress cases passed separately, and the deployed inventory matched. "
+        "The inspection reported no guardrail reference. [Managed results](STRESS_TEST.md#observed-results) "
+        "L1, deployed L2, and L5 were outside the offline ablation.", "",
         "## Layer x Attack matrix", "",
         "| Attack | L1 guardrail | L2 tool allowlist | " + " | ".join(CONFIGURATIONS) + " |",
         "| " + " | ".join(["---"] * (3 + len(CONFIGURATIONS))) + " |",

@@ -1,0 +1,156 @@
+{
+  "mode": "live",
+  "result": "PASS",
+  "stage": "complete",
+  "run_date": "2026-11-27",
+  "sanitization": {
+    "lease_id": "One alias is shared by all records for the original lease.",
+    "timestamps": "Run date uses Sri Lanka time. Snapshot times are seconds since proposal, rounded to milliseconds.",
+    "audit_order": "Audit entries retain their original order. Database event IDs are omitted."
+  },
+  "before_approval": {
+    "leases": [
+      {
+        "user_id": "user1",
+        "lease_id": "lease-1",
+        "device_id": "pump-1",
+        "action": "run",
+        "params": "{\"duration_s\": 5}",
+        "status": "PENDING",
+        "expires_after_proposal_s": 60.0,
+        "approval_ttl_s": 60,
+        "approval_required": 1
+      }
+    ],
+    "audit_log": [
+      {
+        "user_id": "user1",
+        "lease_id": "lease-1",
+        "event": "propose",
+        "outcome": "pending_approval",
+        "reason": null,
+        "elapsed_since_proposal_s": 0.0
+      }
+    ],
+    "run_ledger": [],
+    "controller_receipts": []
+  },
+  "before_replay": {
+    "leases": [
+      {
+        "user_id": "user1",
+        "lease_id": "lease-1",
+        "device_id": "pump-1",
+        "action": "run",
+        "params": "{\"duration_s\": 5}",
+        "status": "CONSUMED",
+        "expires_after_proposal_s": 60.0,
+        "approval_ttl_s": 60,
+        "approval_required": 1
+      }
+    ],
+    "audit_log": [
+      {
+        "user_id": "user1",
+        "lease_id": "lease-1",
+        "event": "propose",
+        "outcome": "pending_approval",
+        "reason": null,
+        "elapsed_since_proposal_s": 0.0
+      },
+      {
+        "user_id": "user1",
+        "lease_id": "lease-1",
+        "event": "approve",
+        "outcome": "approved",
+        "reason": null,
+        "elapsed_since_proposal_s": 10.515
+      },
+      {
+        "user_id": "user1",
+        "lease_id": "lease-1",
+        "event": "execute",
+        "outcome": "executed",
+        "reason": null,
+        "elapsed_since_proposal_s": 12.394
+      }
+    ],
+    "run_ledger": [
+      {
+        "user_id": "user1",
+        "lease_id": "lease-1",
+        "device_id": "pump-1",
+        "duration_s": "5",
+        "executed_after_proposal_s": 12.394
+      }
+    ],
+    "controller_receipts": [
+      {
+        "lease_id": "lease-1"
+      }
+    ]
+  },
+  "final_evidence": {
+    "leases": [
+      {
+        "user_id": "user1",
+        "lease_id": "lease-1",
+        "device_id": "pump-1",
+        "action": "run",
+        "params": "{\"duration_s\": 5}",
+        "status": "CONSUMED",
+        "expires_after_proposal_s": 60.0,
+        "approval_ttl_s": 60,
+        "approval_required": 1
+      }
+    ],
+    "audit_log": [
+      {
+        "user_id": "user1",
+        "lease_id": "lease-1",
+        "event": "propose",
+        "outcome": "pending_approval",
+        "reason": null,
+        "elapsed_since_proposal_s": 0.0
+      },
+      {
+        "user_id": "user1",
+        "lease_id": "lease-1",
+        "event": "approve",
+        "outcome": "approved",
+        "reason": null,
+        "elapsed_since_proposal_s": 10.515
+      },
+      {
+        "user_id": "user1",
+        "lease_id": "lease-1",
+        "event": "execute",
+        "outcome": "executed",
+        "reason": null,
+        "elapsed_since_proposal_s": 12.394
+      },
+      {
+        "user_id": "user1",
+        "lease_id": "lease-1",
+        "event": "execute",
+        "outcome": "refused",
+        "reason": "lease_consumed",
+        "elapsed_since_proposal_s": 15.055
+      }
+    ],
+    "run_ledger": [
+      {
+        "user_id": "user1",
+        "lease_id": "lease-1",
+        "device_id": "pump-1",
+        "duration_s": "5",
+        "executed_after_proposal_s": 12.394
+      }
+    ],
+    "controller_receipts": [
+      {
+        "lease_id": "lease-1"
+      }
+    ]
+  }
+}

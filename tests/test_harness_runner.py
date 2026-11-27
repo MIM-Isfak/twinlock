@@ -7,7 +7,7 @@ import pytest
 
 from backend import config, db
 from backend.approver_api import ApproverAPI
-from backend.harness_client import Stop, Text, ToolUse
+from backend.harness_client import Stop, Text, ToolUse, _events
 from backend.harness_fake import FakeHarnessClient, Step, demo_steps
 from backend.runner import ChatRunner, RunnerError
 from backend.runner_mock import MockRunner
@@ -81,6 +81,37 @@ def test_refusal_sends_only_the_handler_result_and_stops(local) -> None:
     result, = continuation[2]
     assert result.id == "foreign"
     assert result.value == {"status": "refused", "reason": "device_not_found"}
+
+
+def test_fragmented_adjacent_tool_calls_return_ordered_results(local) -> None:
+    _, tools, _ = local
+    stream = [
+        {"contentBlockStart": {"contentBlockIndex": 0, "start": {
+            "toolUse": {"toolUseId": "list", "name": "list_devices"},
+        }}},
+        {"contentBlockStop": {"contentBlockIndex": 0}},
+        {"contentBlockStart": {"contentBlockIndex": 1, "start": {
+            "toolUse": {"toolUseId": "state", "name": "get_device_state"},
+        }}},
+        {"contentBlockDelta": {"contentBlockIndex": 1, "delta": {
+            "toolUse": {"input": '{"device_id":'},
+        }}},
+        {"contentBlockDelta": {"contentBlockIndex": 1, "delta": {
+            "toolUse": {"input": '"pump-1"}'},
+        }}},
+        {"contentBlockStop": {"contentBlockIndex": 1}},
+        {"messageStop": {"stopReason": "tool_use"}},
+    ]
+    fake = FakeHarnessClient([tuple(_events(stream)), (Text("Done."), Stop("end_turn"))])
+    runner = ChatRunner(fake, tools)
+    session = runner.open_session("user1")
+
+    assert runner.run_turn(session, "List my devices and read the pump state.") == "Done."
+    assert [invocation[0] for invocation in fake.invocations] == [session, session]
+    listed, state = fake.invocations[1][2]
+    assert (listed.id, state.id) == ("list", "state")
+    assert {device["id"] for device in listed.value} == {"pump-1", "front-door"}
+    assert state.value["state"]["running"] is False
 
 
 def test_tool_call_cap_applies_across_continuations(local, monkeypatch) -> None:
