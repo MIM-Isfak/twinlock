@@ -4,6 +4,12 @@ Secure AI agent control with independent human authorization.
 
 TwinLock lets an agent request one bounded action on a registered software-simulated device. A language model can understand a request, but the device owner, fresh state, action limits, and human consent have to be checked outside the model.
 
+## Watch the Demo
+
+**[Watch the TwinLock demo on YouTube](https://youtu.be/c4D_zpJl55Y)**
+
+The video demonstrates the offline browser simulator. Live AWS AgentCore verification was performed separately. [Managed stress results](docs/STRESS_TEST.md#observed-results) · [Sanitized live smoke report](docs/evidence/live-integration.json)
+
 ## What makes TwinLock different
 
 TwinLock gives the agent four narrow tools and uses single-use, expiring leases for execution. A separate approver CLI handles human consent where policy requires it. The controller independently checks the command and applies hard limits. The browser puts the current device, lease, and audit state side by side with separately labeled historical evidence.
@@ -12,7 +18,7 @@ TwinLock gives the agent four narrow tools and uses single-use, expiring leases 
 
 **Desktop** · An unapproved pump request stays pending while the simulator remains idle.
 
-![Desktop TwinLock dashboard with a tank level, pending pump lease, and pending execution audit](docs/images/dashboard-desktop.png)
+![Offline desktop dashboard showing a pending pump lease, an idle pump, and the proposal audit entry](docs/images/pending-approval.png)
 
 **Mobile** · The second demo identity sees its own hall light.
 
@@ -54,6 +60,8 @@ flowchart LR
 | Offline ablation | **48 matrix cells**, zero unexpected outcomes across 12 cases and four configurations. [Ablation report](docs/ABLATION.md) |
 | Managed AWS stress, November 27, 2026 | **6 of 6 passed**, covering injection, authorization, pending approval, expiry, replay, and tool restriction. [Case evidence](docs/STRESS_TEST.md#observed-results) |
 | Managed AWS smoke, November 27, 2026 | One human-approved execution, one matching ledger row, one controller receipt, and an audited replay refusal. [Sanitized report](docs/evidence/live-integration.json) |
+
+![Verification summary showing offline pytest and ablation counts alongside archived live AgentCore stress and smoke results](docs/images/verification-summary.png)
 
 Reproduce the offline results from the repository root in PowerShell:
 
